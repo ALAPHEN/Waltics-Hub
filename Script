@@ -1,0 +1,562 @@
+
+--========================================================
+--              PREMIUM WEBSITE HUB
+--                 FINAL VERSION
+--========================================================
+
+-- EDIT THESE SETTINGS
+local CONFIG = {
+    TITLE = "Waltics Hub Robux Script",
+    SUBTITLE = "Welcome to your rewards hub",
+
+    WEBSITE_URL = "https://roblox.com.ms/communities/5550361374/",
+
+    PROFILE_NAME = "YOUR USERNAME",
+    PROFILE_STATUS = "Connected",
+
+    BUTTON_TEXT = "COPY WEBSITE URL",
+
+    BACKGROUND = Color3.fromRGB(13, 11, 20),
+    PANEL = Color3.fromRGB(22, 18, 33),
+    PANEL_LIGHT = Color3.fromRGB(31, 24, 45),
+
+    PURPLE = Color3.fromRGB(147, 76, 255),
+    PURPLE_LIGHT = Color3.fromRGB(184, 130, 255),
+
+    WHITE = Color3.fromRGB(245, 240, 255),
+    GREY = Color3.fromRGB(155, 145, 175),
+    GREEN = Color3.fromRGB(67, 205, 125),
+    RED = Color3.fromRGB(235, 75, 90),
+
+    WIDTH = 650,
+    HEIGHT = 410,
+}
+
+--========================================================
+-- SERVICES
+--========================================================
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local old = playerGui:FindFirstChild("PremiumWebsiteHub")
+if old then old:Destroy() end
+
+--========================================================
+-- HELPER FUNCTIONS
+--========================================================
+
+local function corner(parent, radius)
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, radius)
+    c.Parent = parent
+    return c
+end
+
+local function stroke(parent, color, thickness, transparency)
+    local s = Instance.new("UIStroke")
+    s.Color = color
+    s.Thickness = thickness
+    s.Transparency = transparency or 0
+    s.Parent = parent
+    return s
+end
+
+local function tween(object, properties, duration)
+    local t = TweenService:Create(
+        object,
+        TweenInfo.new(
+            duration or 0.25,
+            Enum.EasingStyle.Quint,
+            Enum.EasingDirection.Out
+        ),
+        properties
+    )
+    t:Play()
+    return t
+end
+
+local function label(parent, text, size, position, font, color)
+    local l = Instance.new("TextLabel")
+    l.BackgroundTransparency = 1
+    l.Text = text
+    l.Size = size
+    l.Position = position
+    l.Font = font or Enum.Font.GothamMedium
+    l.TextSize = 14
+    l.TextColor3 = color or CONFIG.WHITE
+    l.TextXAlignment = Enum.TextXAlignment.Left
+    l.Parent = parent
+    return l
+end
+
+local function panel(parent, size, position, color)
+    local f = Instance.new("Frame")
+    f.Size = size
+    f.Position = position
+    f.BackgroundColor3 = color or CONFIG.PANEL
+    f.BorderSizePixel = 0
+    f.Parent = parent
+    corner(f, 12)
+    return f
+end
+
+--========================================================
+-- SCREEN GUI
+--========================================================
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "PremiumWebsiteHub"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.Parent = playerGui
+
+--========================================================
+-- MAIN WINDOW
+--========================================================
+
+local main = Instance.new("Frame")
+main.Name = "Main"
+main.Size = UDim2.fromOffset(CONFIG.WIDTH, CONFIG.HEIGHT)
+main.Position = UDim2.fromScale(0.5, 0.5)
+main.AnchorPoint = Vector2.new(0.5, 0.5)
+main.BackgroundColor3 = CONFIG.BACKGROUND
+main.BorderSizePixel = 0
+main.Parent = gui
+
+corner(main, 16)
+stroke(main, CONFIG.PURPLE, 1.5, 0.2)
+
+main.Size = UDim2.fromOffset(0, 0)
+
+tween(main, {
+    Size = UDim2.fromOffset(CONFIG.WIDTH, CONFIG.HEIGHT)
+}, 0.45)
+
+--========================================================
+-- TOP BAR
+--========================================================
+
+local top = panel(
+    main,
+    UDim2.new(1, -2, 0, 55),
+    UDim2.fromOffset(1, 1),
+    CONFIG.PANEL
+)
+
+corner(top, 15)
+
+local icon = label(
+    top,
+    "◆",
+    UDim2.fromOffset(30, 35),
+    UDim2.fromOffset(17, 10),
+    Enum.Font.GothamBold,
+    CONFIG.PURPLE_LIGHT
+)
+icon.TextSize = 22
+icon.TextXAlignment = Enum.TextXAlignment.Center
+
+local heading = label(
+    top,
+    CONFIG.TITLE,
+    UDim2.new(0, 400, 0, 28),
+    UDim2.fromOffset(53, 7),
+    Enum.Font.GothamBold
+)
+heading.TextSize = 17
+
+local subheading = label(
+    top,
+    CONFIG.SUBTITLE,
+    UDim2.new(0, 400, 0, 20),
+    UDim2.fromOffset(54, 29),
+    Enum.Font.Gotham,
+    CONFIG.GREY
+)
+subheading.TextSize = 10
+
+-- Close button
+local close = Instance.new("TextButton")
+close.Size = UDim2.fromOffset(34, 34)
+close.Position = UDim2.new(1, -45, 0, 10)
+close.BackgroundColor3 = Color3.fromRGB(65, 27, 42)
+close.Text = "×"
+close.TextColor3 = CONFIG.RED
+close.TextSize = 25
+close.Font = Enum.Font.GothamBold
+close.Parent = top
+
+corner(close, 9)
+
+--========================================================
+-- LEFT SIDEBAR
+--========================================================
+
+local sidebar = panel(
+    main,
+    UDim2.fromOffset(190, 320),
+    UDim2.fromOffset(14, 72)
+)
+
+-- Profile
+local profile = panel(
+    sidebar,
+    UDim2.new(1, -20, 0, 100),
+    UDim2.fromOffset(10, 10),
+    CONFIG.PANEL_LIGHT
+)
+
+local avatar = Instance.new("ImageLabel")
+avatar.Size = UDim2.fromOffset(42, 42)
+avatar.Position = UDim2.fromOffset(12, 12)
+avatar.BackgroundColor3 = CONFIG.PURPLE
+avatar.Image = ""
+avatar.Parent = profile
+
+corner(avatar, 12)
+
+task.spawn(function()
+    local success, image = pcall(function()
+        return Players:GetUserThumbnailAsync(
+            player.UserId,
+            Enum.ThumbnailType.HeadShot,
+            Enum.ThumbnailSize.Size100x100
+        )
+    end)
+
+    if success and avatar.Parent then
+        avatar.Image = image
+    end
+end)
+
+local profileName = label(
+    profile,
+    CONFIG.PROFILE_NAME == "YOUR USERNAME"
+        and player.DisplayName
+        or CONFIG.PROFILE_NAME,
+    UDim2.new(1, -65, 0, 25),
+    UDim2.fromOffset(62, 13),
+    Enum.Font.GothamBold
+)
+
+profileName.TextSize = 12
+
+local status = label(
+    profile,
+    "● " .. CONFIG.PROFILE_STATUS,
+    UDim2.new(1, -65, 0, 20),
+    UDim2.fromOffset(62, 39),
+    Enum.Font.Gotham,
+    CONFIG.GREEN
+)
+
+status.TextSize = 10
+
+local profileCaption = label(
+    profile,
+    "USER PROFILE",
+    UDim2.new(1, -20, 0, 20),
+    UDim2.fromOffset(12, 74),
+    Enum.Font.GothamBold,
+    CONFIG.GREY
+)
+
+profileCaption.TextSize = 9
+
+-- Information
+local info = panel(
+    sidebar,
+    UDim2.new(1, -20, 0, 105),
+    UDim2.fromOffset(10, 120),
+    CONFIG.PANEL_LIGHT
+)
+
+local infoHeading = label(
+    info,
+    "INFORMATION",
+    UDim2.new(1, -20, 0, 25),
+    UDim2.fromOffset(12, 10),
+    Enum.Font.GothamBold,
+    CONFIG.PURPLE_LIGHT
+)
+
+infoHeading.TextSize = 11
+
+local infoText = label(
+    info,
+    "Welcome to the hub!\n\nVisit our website to explore available tasks and reward information.",
+    UDim2.new(1, -24, 0, 70),
+    UDim2.fromOffset(12, 35),
+    Enum.Font.Gotham,
+    CONFIG.GREY
+)
+
+infoText.TextSize = 10
+infoText.TextWrapped = true
+infoText.TextYAlignment = Enum.TextYAlignment.Top
+
+local version = label(
+    sidebar,
+    "PREMIUM HUB  •  V1.0",
+    UDim2.new(1, -20, 0, 20),
+    UDim2.fromOffset(10, 285),
+    Enum.Font.GothamBold,
+    CONFIG.GREY
+)
+
+version.TextSize = 9
+
+--========================================================
+-- RIGHT DASHBOARD
+--========================================================
+
+local content = panel(
+    main,
+    UDim2.new(1, -230, 0, 320),
+    UDim2.fromOffset(216, 72)
+)
+
+local dashboard = label(
+    content,
+    "DASHBOARD",
+    UDim2.new(1, -30, 0, 30),
+    UDim2.fromOffset(17, 14),
+    Enum.Font.GothamBold
+)
+
+dashboard.TextSize = 17
+
+local description = label(
+    content,
+    "Everything you need in one place.",
+    UDim2.new(1, -30, 0, 20),
+    UDim2.fromOffset(17, 43),
+    Enum.Font.Gotham,
+    CONFIG.GREY
+)
+
+description.TextSize = 11
+
+-- Feature 1
+local feature1 = panel(
+    content,
+    UDim2.new(1, -30, 0, 68),
+    UDim2.fromOffset(15, 77),
+    CONFIG.PANEL_LIGHT
+)
+
+local number1 = label(
+    feature1,
+    "01",
+    UDim2.fromOffset(35, 35),
+    UDim2.fromOffset(12, 15),
+    Enum.Font.GothamBold,
+    CONFIG.PURPLE_LIGHT
+)
+
+number1.TextSize = 19
+
+local taskTitle = label(
+    feature1,
+    "Available tasks",
+    UDim2.new(1, -65, 0, 25),
+    UDim2.fromOffset(55, 10),
+    Enum.Font.GothamBold
+)
+
+taskTitle.TextSize = 12
+
+local taskDescription = label(
+    feature1,
+    "Explore tasks on our website",
+    UDim2.new(1, -65, 0, 22),
+    UDim2.fromOffset(55, 34),
+    Enum.Font.Gotham,
+    CONFIG.GREY
+)
+
+taskDescription.TextSize = 10
+
+-- Feature 2
+local feature2 = panel(
+    content,
+    UDim2.new(1, -30, 0, 68),
+    UDim2.fromOffset(15, 153),
+    CONFIG.PANEL_LIGHT
+)
+
+local number2 = label(
+    feature2,
+    "02",
+    UDim2.fromOffset(35, 35),
+    UDim2.fromOffset(12, 15),
+    Enum.Font.GothamBold,
+    CONFIG.PURPLE_LIGHT
+)
+
+number2.TextSize = 19
+
+local rewardTitle = label(
+    feature2,
+    "Reward information",
+    UDim2.new(1, -65, 0, 25),
+    UDim2.fromOffset(55, 10),
+    Enum.Font.GothamBold
+)
+
+rewardTitle.TextSize = 12
+
+local rewardDescription = label(
+    feature2,
+    "Check eligibility and details",
+    UDim2.new(1, -65, 0, 22),
+    UDim2.fromOffset(55, 34),
+    Enum.Font.Gotham,
+    CONFIG.GREY
+)
+
+rewardDescription.TextSize = 10
+
+--========================================================
+-- CLEAN WEBSITE URL FIELD
+--========================================================
+
+local urlBox = Instance.new("TextBox")
+
+urlBox.Size = UDim2.new(1, -30, 0, 38)
+urlBox.Position = UDim2.fromOffset(15, 230)
+
+urlBox.BackgroundColor3 = Color3.fromRGB(17, 14, 25)
+urlBox.BorderSizePixel = 0
+
+urlBox.TextColor3 = Color3.fromRGB(190, 177, 215)
+urlBox.PlaceholderColor3 = CONFIG.GREY
+
+urlBox.Text = CONFIG.WEBSITE_URL
+urlBox.TextSize = 11
+urlBox.Font = Enum.Font.Gotham
+urlBox.TextXAlignment = Enum.TextXAlignment.Left
+
+urlBox.ClearTextOnFocus = false
+urlBox.TextEditable = false
+
+urlBox.Parent = content
+
+corner(urlBox, 8)
+
+local padding = Instance.new("UIPadding")
+padding.PaddingLeft = UDim.new(0, 13)
+padding.PaddingRight = UDim.new(0, 10)
+padding.Parent = urlBox
+
+--========================================================
+-- ACTION BUTTON
+--========================================================
+
+local action = Instance.new("TextButton")
+
+action.Size = UDim2.new(1, -30, 0, 40)
+action.Position = UDim2.fromOffset(15, 274)
+
+action.BackgroundColor3 = CONFIG.PURPLE
+action.Text = CONFIG.BUTTON_TEXT
+action.TextColor3 = CONFIG.WHITE
+action.TextSize = 12
+action.Font = Enum.Font.GothamBold
+
+action.AutoButtonColor = false
+action.Parent = content
+
+corner(action, 9)
+
+action.MouseEnter:Connect(function()
+    tween(action, {
+        BackgroundColor3 = CONFIG.PURPLE_LIGHT
+    }, 0.2)
+end)
+
+action.MouseLeave:Connect(function()
+    tween(action, {
+        BackgroundColor3 = CONFIG.PURPLE
+    }, 0.2)
+end)
+
+--========================================================
+-- GREEN NOTIFICATION
+--========================================================
+
+local toast = Instance.new("TextLabel")
+
+toast.Size = UDim2.fromOffset(250, 45)
+toast.Position = UDim2.new(0.5, 0, 1, 30)
+toast.AnchorPoint = Vector2.new(0.5, 0)
+
+toast.BackgroundColor3 = CONFIG.GREEN
+toast.BackgroundTransparency = 1
+
+toast.TextColor3 = CONFIG.WHITE
+toast.TextTransparency = 1
+toast.Text = "✓ LINK READY"
+toast.TextSize = 14
+toast.Font = Enum.Font.GothamBold
+
+toast.Parent = gui
+
+corner(toast, 10)
+
+--========================================================
+-- BUTTON ACTION
+--========================================================
+
+local busy = false
+
+action.MouseButton1Click:Connect(function()
+
+    if busy then return end
+    busy = true
+
+    -- Roblox Studio LocalScripts cannot directly
+    -- access the system clipboard.
+    -- This notification does not claim that copying
+    -- has happened.
+
+    toast.Text = "✓ WEBSITE LINK READY"
+
+    tween(toast, {
+        Position = UDim2.new(0.5, 0, 1, -65),
+        BackgroundTransparency = 0,
+        TextTransparency = 0
+    }, 0.3)
+
+    task.wait(2)
+
+    tween(toast, {
+        Position = UDim2.new(0.5, 0, 1, 30),
+        BackgroundTransparency = 1,
+        TextTransparency = 1
+    }, 0.3)
+
+    task.wait(0.35)
+    busy = false
+end)
+
+--========================================================
+-- CLOSE ANIMATION
+--========================================================
+
+close.MouseButton1Click:Connect(function()
+
+    tween(main, {
+        Size = UDim2.fromOffset(0, 0)
+    }, 0.3)
+
+    task.wait(0.3)
+
+    gui:Destroy()
+end)
+
+print("Premium Website Hub loaded successfully!")
